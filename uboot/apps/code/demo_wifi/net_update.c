@@ -51,6 +51,7 @@ struct http_range_ota {
     unsigned char *file;
     unsigned char *send_buf;
     unsigned int buf_size;
+    unsigned char head_ok;  //http头接收完成
     unsigned char buf[0];
 };
 static struct http_range_ota *http_ota = NULL;
@@ -102,6 +103,8 @@ static char net_ota_lastpacket = 0;
 static char net_ota_start = 0;
 static unsigned int ota_all_size = 0;
 static unsigned int ota_read_size = 0;
+
+static u8 net_ota_file_resv_en = 1; //预留区正向读取时关闭反向预读，避免每包重新建连
 
 #define OS_SEM_TIME_MAX	500 //5s
 static OS_SEM read_sem;
@@ -159,6 +162,11 @@ extern int vm_data_recover(void);
 extern unsigned int timer_get_ms();
 int net_update_http_dev_desc(void);
 int net_update_ctp_server(void);
+
+void net_ota_file_resv_set(u8 en)
+{
+    net_ota_file_resv_en = en;
+}
 
 static unsigned int sumget(void *buf, int len)
 {
@@ -352,10 +360,13 @@ static err_t msgrecv(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err_t err)
             }
             tcp_recved(pcb, tot_len);
             /*printf("recv size : %d \n%s\n", tot_len, httpota->buf + httpota->recv_offset);*/
-            if (!httpota->recv_offset) {
+            if (!httpota->recv_offset && !httpota->head_ok) {
                 char *p, *f, *c;
                 p = (char *)httpota->buf + httpota->recv_offset;
                 f = strstr(p, "HTTP/1.1 206");
+                if (!f) {
+                    f = strstr(p, "HTTP/1.0 206");
+                }
                 /*sdfile_save_test(p, tot_len, 0, 1);*/
                 if (f) {
                     net_recv_err = 0;
@@ -409,22 +420,27 @@ static err_t msgrecv(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err_t err)
                     }
 find:
                     if (Find) {
+                        httpota->head_ok = 1;
                         len = tot_len - (c - p);
-                        memcpy(httpota->buf, c, len);
-                        httpota->buf[len] = 0;
-                        httpota->recv_offset += len;
+                        if (len > 0) {
+                            memcpy(httpota->buf, c, len);
+                            httpota->buf[len] = 0;
+                            httpota->recv_offset += len;
+                        }
+
                     } else {
                         printf("recv head data err\n");
                         goto err;
                     }
                 } else {
 err:
-                    printf("recv err : %s \n", f);
+                    printf("recv err \n");
                     net_recv_err++;
                     if (net_recv_err >= 3) {
                         net_recv_err = 0;
                         net_ota_stop = 1;
                         httpota->recv_offset = 0;
+                        httpota->head_ok = 0;
                     }
                     os_sem_post(&read_sem);
                 }
@@ -595,6 +611,7 @@ static int http_get(const char *url, char reset, int size)
             http_ota->file = NULL;
             http_ota->send_buf = NULL;
             http_ota->recv_offset = 0;
+            http_ota->head_ok = 0;
             http_ota->file_size = 0;
             goto exit;
         }
@@ -605,6 +622,7 @@ static int http_get(const char *url, char reset, int size)
     http_ota->send_buf = http_ota->host + len + 1;
     http_ota->file = NULL;
     http_ota->recv_offset = 0;
+    http_ota->head_ok = 0;
     if ((strlen(e) + len + 2) < http_ota->buf_size) {
         http_ota->file = http_ota->host + len + 1;
         len = strlen(e);
@@ -699,7 +717,7 @@ static int http_read(void *priv, char reset)
         return net_local->read_size;
     }
 #if NET_OTA_FILE_RESV
-    if (http_ota->range_start > (http_ota->buf_size - net_local->read_size)) {
+    if (net_ota_file_resv_en && (http_ota->range_start > (http_ota->buf_size - net_local->read_size))) {
         http_ota->range_start -= (http_ota->buf_size - net_local->read_size);
     }
 #endif
@@ -756,7 +774,12 @@ int net_f_open(int port)
         os_sem_create(&read_sem, 0);
     }
 
+#ifndef CONFIG_NET_UPGRADE_INFO_USE_RESERVED
     http_url_path = vm_http_get();
+#else
+    http_url_path = reserved_http_get();
+#endif
+
     http_url_path = http_url_path ? http_url_path : HTTP_UPDATE_URL;
     if (!net_local_addr) {
         net_local_addr = malloc(sizeof(struct net_local));
@@ -1178,7 +1201,11 @@ void net_ota_update(void)
     } while (cnt && cnt < 120 * 100);
     cnt = 3;
     if (ret) {
+#ifndef CONFIG_NET_UPGRADE_INFO_USE_RESERVED
         printf("---> http url : %s \n", vm_http_get());
+#else
+        printf("---> http url : %s \n", reserved_http_get());
+#endif
     }
     os_time_dly(100);//偶现的连上立马创建tcp无法连接服务器问题
 #else

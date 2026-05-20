@@ -16,6 +16,7 @@ enum EXT_ARG_TYPE {
     EXT_LDO_TRIM_RES = 0,
     EXT_JUMP_FLAG,
     EXT_SHARE_OSC_EN,
+    EXT_PATCH_CHECK_FLAG = 6,
     EXT_TYPE_MAX = 0xff,
 };
 

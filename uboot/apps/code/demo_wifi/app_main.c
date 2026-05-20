@@ -374,7 +374,9 @@ static int app_core(void)
 void app_main(void)
 {
     app_mem_init();
+#ifndef CONFIG_NET_UPGRADE_INFO_USE_RESERVED
     vm_find();
+#endif
     task_create(app_core, NULL, "app_core");
     task_create(net_ota_update, NULL, "net_ota");
 }

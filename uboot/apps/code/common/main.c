@@ -305,8 +305,16 @@ void uboot_main(void *pSDF, u32 addr, u32 prevApp)
 #endif
 
 #if NET_UPDATA_MODULE_CONTROL /*在set_updata_result函数清除升级的地址前保存boot_info数据*/
+
+#ifndef CONFIG_NET_UPGRADE_INFO_USE_RESERVED
     void boot_info_save(void *info);
     boot_info_save(&g_boot_info);
+#else
+
+    void reserved_config_load(void);
+    reserved_config_load();
+#endif //CONFIG_NET_UPGRADE_INFO_USE_RESERVED
+
 #endif
 
     set_updata_result(UPDATA_DEV_ERR);

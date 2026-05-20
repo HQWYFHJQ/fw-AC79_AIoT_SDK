@@ -5,7 +5,7 @@
 #include "wifi/wifi_connect.h"
 #include "utils/syscfg_id.h"
 #include "lwip/dns.h"
-
+#include "lib_include.h"
 
 static char save_ssid_flag, request_connect_flag;
 
@@ -231,14 +231,23 @@ int init_net_device_mac_addr(char *macaddr, char ap_mode)
     return 0;
 }
 struct wifi_store_info wifi_vm_info = {0};
+struct wifi_store_info wifi_reserved_info = {0};
 int wifi_stored_mode_get(struct wifi_store_info *info)
 {
+#ifndef CONFIG_NET_UPGRADE_INFO_USE_RESERVED
     if (wifi_vm_info.mode) {
         memcpy(info, &wifi_vm_info, sizeof(struct wifi_store_info));
         return 1;
     }
+#else
+    if (wifi_reserved_info.mode) {
+        memcpy(info, &wifi_reserved_info, sizeof(struct wifi_store_info));
+        return 1;
+    }
+#endif
     return 0;
 }
+
 static int wifi_connect_sta_mac(int offset, u8 *mac, int len, int index)//存储、查找、删除连接的STA设备的mac
 {
     static u8 store_mac[6 * 5] = {0};
@@ -306,7 +315,7 @@ static int wifi_event_callback(void *network_ctx, enum WIFI_EVENT event)
         if (!ret || wifi_default_mode_parm.mode != STA_MODE ||
             wifi_default_mode_parm.ssid[wifi_default_mode_parm.mode - STA_MODE] == NULL ||
             wifi_default_mode_parm.ssid[wifi_default_mode_parm.mode - STA_MODE] == 0) {
-            printf("err in vm wifi info \n\n");
+            printf("err in vm wifi info , ret = %d \n\n", ret);
             cpu_reset();
         }
         printf("--->vm ssid = %s ,pdw = %s \n", wifi_default_mode_parm.ssid[wifi_default_mode_parm.mode - STA_MODE],
