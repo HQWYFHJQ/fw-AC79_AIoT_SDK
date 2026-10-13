@@ -16,6 +16,19 @@
 
 // *INDENT-OFF*
 
+#ifdef CONFIG_UART_NET_ENABLE
+const struct uart_platform_data uart0_data = {
+    .baudrate = 4000000,
+    .port = PORTH_0_1,
+    .tx_pin = IO_PORTH_00,
+    .rx_pin = IO_PORTH_01,
+    .max_continue_recv_cnt = 2048,
+    /* .idle_sys_clk_cnt = 500000, */
+    .clk_src = PLL_48M,
+UART0_PLATFORM_DATA_END();
+#endif
+
+
 UART1_PLATFORM_DATA_BEGIN(uart1_data)
     .baudrate = 115200,
     .port = PORTUSB_A,
@@ -32,7 +45,7 @@ UART2_PLATFORM_DATA_BEGIN(uart2_data)
 	.baudrate = 1000000,
 	.port = PORT_REMAP,
 	.output_channel = OUTPUT_CHANNEL0,
-	.tx_pin = IO_PORTC_00,
+	.tx_pin = IO_PORTB_03,
 	.rx_pin = -1,
 	.max_continue_recv_cnt = 1024,
 	.idle_sys_clk_cnt = 500000,
@@ -138,6 +151,9 @@ static const struct otg_dev_data otg_data = {
 
 
 REGISTER_DEVICES(device_table) = {
+#ifdef CONFIG_UART_NET_ENABLE
+    { "uart0", &uart_dev_ops, (void *)&uart0_data },
+#endif
     {"uart1", &uart_dev_ops, (void *)&uart1_data },
     {"uart2", &uart_dev_ops, (void *)&uart2_data },
     {"rtc", &rtc_dev_ops, NULL},

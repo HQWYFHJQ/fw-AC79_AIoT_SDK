@@ -396,6 +396,13 @@ static void rcsp_update_state_cbk(int type, u32 state, void *priv)
     }
 }
 
+#if CONFIG_DOUBLE_BANK_ENABLE
+static void get_update_percent_info(update_percent_info *info)
+{
+    printf("update >>> %d%%\n", info->percent);
+}
+#endif
+
 void rcsp_update_loader_download_init(int update_type, void (*result_cbk)(void *priv, u8 type, u8 cmd))
 {
 #if((OTA_TWS_SAME_TIME_ENABLE && (RCSP_MODE)))
@@ -417,6 +424,9 @@ void rcsp_update_loader_download_init(int update_type, void (*result_cbk)(void *
             .p_op_api = &rcsp_update_op,
             .task_en = 1,
         };
+#if CONFIG_DOUBLE_BANK_ENABLE
+        register_update_percent_info_callback_handle(get_update_percent_info);
+#endif
         app_active_update_task_init(&info);
     }
 

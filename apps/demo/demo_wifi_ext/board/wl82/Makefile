@@ -108,8 +108,6 @@ DEFINES := \
 	-DEQ_CORE_V1 \
 	-DCONFIG_SFC_ENABLE \
 	-DCONFIG_NET_ENABLE=1 \
-	-DCONFIG_EXT_WIFI_ENABLE \
-	-DCONFIG_AIC8800D40_ENABLE \
 	-DEVENT_HANDLER_NUM_CONFIG=2 \
 	-DEVENT_TOUCH_ENABLE_CONFIG=0 \
 	-DEVENT_POOL_SIZE_CONFIG=256 \
@@ -182,7 +180,6 @@ c_SRC_FILES := \
 	../../../../../apps/common/debug/debug_user.c \
 	../../../../../apps/common/net/assign_macaddr.c \
 	../../../../../apps/common/net/config_network.c \
-	../../../../../apps/common/net/ext_wifi_conf.c \
 	../../../../../apps/common/net/iperf_test.c \
 	../../../../../apps/common/net/platform_cfg.c \
 	../../../../../apps/common/net/wifi_conf.c \
@@ -226,7 +223,6 @@ c_SRC_FILES := \
 	../../../../../apps/common/usb/usb_host_config.c \
 	../../../../../apps/demo/demo_wifi_ext/app_main.c \
 	../../../../../apps/demo/demo_wifi_ext/board/wl82/board.c \
-	../../../../../apps/demo/demo_wifi_ext/ext_wifi_app_task.c \
 	../../../../../apps/demo/demo_wifi_ext/lte_app_task.c \
 	../../../../../apps/demo/demo_wifi_ext/wifi_demo_task.c \
 	../../../../../cpu/wl82/debug.c \
@@ -312,16 +308,16 @@ LFLAGS := \
 	../../../../../cpu/wl82/liba/common_lib.a \
 	../../../../../cpu/wl82/liba/update.a \
 	../../../../../cpu/wl82/liba/lte_module.a \
+	../../../../../cpu/wl82/liba/wl_rf_common.a \
+	../../../../../cpu/wl82/liba/hsm.a \
 	../../../../../cpu/wl82/liba/http_cli.a \
 	../../../../../cpu/wl82/liba/https_cli.a \
 	../../../../../cpu/wl82/liba/json.a \
 	../../../../../cpu/wl82/liba/iperf.a \
 	../../../../../cpu/wl82/liba/libmbedtls_3_4_0.a \
 	../../../../../cpu/wl82/liba/lwip_2_2_0.a \
-	../../../../../cpu/wl82/liba/hsm_ext.a \
-	../../../../../cpu/wl82/liba/ext_wifi_dev.a \
-	../../../../../cpu/wl82/liba/sdio_card.a \
-	../../../../../cpu/wl82/liba/libaicwifi.a \
+	../../../../../cpu/wl82/liba/wl_wifi.a \
+	../../../../../cpu/wl82/liba/wpasupplicant.a \
 	--end-group \
 	-T../../../../../cpu/wl82/sdk.ld \
 	-M=../../../../../cpu/wl82/tools/sdk.map \

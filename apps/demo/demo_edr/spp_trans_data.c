@@ -59,7 +59,7 @@ int transport_spp_send_data(u8 *data, u16 len)
         /* log_info("spp_api_tx(%d) \n", len); */
         /* log_info_hexdump(data, len); */
         clear_sniff_cnt();
-        return spp_api->send_data(NULL, data, len);
+        return spp_api->send_data(NULL, NULL, data, len);
     }
     return SPP_USER_ERR_SEND_FAIL;
 }

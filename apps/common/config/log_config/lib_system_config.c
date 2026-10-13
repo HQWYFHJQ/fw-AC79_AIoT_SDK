@@ -62,6 +62,8 @@ const int FATFS_SUPPORT_WRITE_CUTOFF = 1; //支持fseek截断文件，打开后f
 const int FATFS_GET_SPACE_USE_RAM = 0; //获取剩余容量使用大Buf缓存, 必须512倍数
 const int FATFS_FORMAT_USE_RAM = 0; //32 * 1024;  //格式化功能使用大Buf缓存,加快速度, 必须512倍数
 const int FILE_ALLOC_MODE = 1; //0表示和电脑逻辑一致，不节省空间和扫描时间。
+const int FS_SFN_COLLISION_CHECK = 0; //短名标准查重检测
+
 
 //================================================//
 //                  dev使用异步读使能             //

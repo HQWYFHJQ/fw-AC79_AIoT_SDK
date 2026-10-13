@@ -1,7 +1,5 @@
-/*
- * Copyright (c) 2024 The VolcEngineRTCLite project authors. All Rights Reserved.
- * @brief VolcEngineRTCLite Interface Lite
- */
+// Copyright (2025) Beijing Volcano Engine Technology Ltd.
+// SPDX-License-Identifier: MIT
 
 #ifndef __BYTE_RTC_API_H__
 #define __BYTE_RTC_API_H__
@@ -9,6 +7,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include "asm/cpu.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -23,8 +22,8 @@ extern "C" {
 #define __byte_rtc_api__ __attribute__((visibility("default")))
 #endif
 
-#define BYTE_RTC_API_VERSION "1.0.9"
-#define BYTE_RTC_API_VERSION_NUM 0x1009
+#define BYTE_RTC_API_VERSION "1.1.0"
+#define BYTE_RTC_API_VERSION_NUM 0x1100
 
 
 /**
@@ -227,7 +226,6 @@ typedef enum {
      */
     VIDEO_DATA_TYPE_MJPEG = 3,
 
-
 } video_data_type_e;
 
 /**
@@ -336,7 +334,6 @@ typedef enum {
      * @brief G711U
      */
     AUDIO_CODEC_TYPE_G711U  = 5,
-
 } audio_codec_type_e;
 
 
@@ -538,8 +535,17 @@ typedef enum {
      * @locale zh
      * @brief 可靠消息
      */
-    RTS_MESSAGE_RELIABLE = 0,
-
+    RTS_MESSAGE_RELIABLE                = 0,
+    /**
+     * @locale zh
+     * @brief 不可靠有序消息
+     */
+    RTS_MESSAGE_UNRELIABLE_ORDERED      = 1,
+    /**
+     * @locale zh
+     * @brief 不可靠无序消息
+    */
+    RTS_MESSAGE_UNRELIABLE_UNORDERED    = 2
 } rts_message_type;
 
 /**
@@ -709,7 +715,6 @@ typedef struct {
      */
     void (*on_audio_data)(byte_rtc_engine_t engine, const char *room, const char *uid, uint16_t sent_ts,
                           audio_data_type_e codec, const void *data_ptr, size_t data_len);
-
     /**
      * @locale zh
      * @type callback
@@ -1019,8 +1024,7 @@ extern __byte_rtc_api__ int byte_rtc_set_video_codec(byte_rtc_engine_t engine, v
  * @param room 房间名
  * @param uid 用户名
  * @param token 动态密钥，用于对加入房间用户进行鉴权验证  <br>
- * @param options 房间音视频自动订阅设置，参看 byte_rtc_room_options_t{@link #byte_rtc_room_options_t} <br>
- *                此版本无效，默认使用自动订阅
+ * @param options 房间音视频自动订阅和发布设置，参看 byte_rtc_room_options_t{@link #byte_rtc_room_options_t} <br>
  * @return 方法调用结果：<br>
  *         - 0：成功 <br>
  *         - -1：引擎实例不存在 <br>
@@ -1150,7 +1154,7 @@ extern __byte_rtc_api__ int byte_rtc_send_video_data(byte_rtc_engine_t engine, c
  * @param data_ptr 实时信令消息数据
  * @param data_len 实时信令消息长度
  * @param binary 指定消息是否是二进制消息
- * @param type 用于指定实时信令消息类型，目前仅支持RTS_MESSAGE_RELIABLE
+ * @param type 用于指定实时信令消息类型，对于房间内广播消息，仅支持RTS_MESSAGE_RELIABLE
 
  * @return 方法调用结果：<br>
  *         - < 0：失败 <br>
@@ -1177,4 +1181,3 @@ extern __byte_rtc_api__ int byte_rtc_set_params(byte_rtc_engine_t engine, const 
 }
 #endif
 #endif /* __BYTE_RTC_API_H__ */
-

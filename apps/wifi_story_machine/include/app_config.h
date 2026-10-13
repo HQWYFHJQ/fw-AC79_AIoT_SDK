@@ -299,6 +299,8 @@
 #endif
 #endif
 
+#define CONFIG_MIDI_DEC_ADDR //midi音色地址访问
+
 #define CONFIG_MIDI_CTRL_DEC_ENABLE
 #define CONFIG_PCM_DEC_ENABLE
 #define CONFIG_PCM_ENC_ENABLE

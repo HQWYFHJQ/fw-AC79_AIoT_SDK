@@ -9,7 +9,7 @@
 #define BT_CONNECTION_VERIFY        0   // 0是校验,1是不校验
 
 #if (RCSP_UPDATE_EN)
-#define VER_INFO_EXT_COUNT          2   //2
+#define VER_INFO_EXT_COUNT          0   //2
 #else
 #define VER_INFO_EXT_COUNT          0   //2
 #endif

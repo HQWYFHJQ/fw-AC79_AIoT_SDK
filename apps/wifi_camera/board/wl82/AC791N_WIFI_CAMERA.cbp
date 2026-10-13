@@ -333,6 +333,7 @@
 <Unit filename="../../../../apps/common/update/http_update.c"><Option compilerVer="CC"/></Unit>
 <Unit filename="../../../../apps/common/update/net_single_backup_update.c"><Option compilerVer="CC"/></Unit>
 <Unit filename="../../../../apps/common/update/net_update.c"><Option compilerVer="CC"/></Unit>
+<Unit filename="../../../../apps/common/update/reserved_config.c"><Option compilerVer="CC"/></Unit>
 <Unit filename="../../../../apps/common/update/update.c"><Option compilerVer="CC"/></Unit>
 <Unit filename="../../../../apps/common/usb/device/cdc.c"><Option compilerVer="CC"/></Unit>
 <Unit filename="../../../../apps/common/usb/device/cdc.h" />
@@ -603,14 +604,12 @@
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/err.h" />
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/errno.h" />
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/icmp.h" />
-<Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/icmp6.h" />
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/inet.h" />
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/ip.h" />
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/ip4.h" />
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/ip4_addr.h" />
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/ip6.h" />
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/ip6_addr.h" />
-<Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/ip6_zone.h" />
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/ip_addr.h" />
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/mem.h" />
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/memp.h" />
@@ -623,11 +622,9 @@
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/priv/memp_std.h" />
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/prot/ethernet.h" />
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/prot/icmp.h" />
-<Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/prot/icmp6.h" />
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/prot/ieee.h" />
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/prot/ip.h" />
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/prot/ip4.h" />
-<Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/prot/ip6.h" />
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/sockets.h" />
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/stats.h" />
 <Unit filename="../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/tcp.h" />

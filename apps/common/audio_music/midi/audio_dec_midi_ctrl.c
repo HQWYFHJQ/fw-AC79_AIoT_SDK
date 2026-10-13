@@ -40,11 +40,12 @@ struct _midi_obj {
 
 //midi文件播放时，对应的音色文件路径(用户可修改路径)
 #ifndef CONFIG_MIDI_DEC_ADDR
-//音色文件支持在外部存储卡或者外挂flash,sdk默认使用本方式
+//音色文件支持在外部存储卡或者外挂flash
 #define MIDI_FILE_PATH  "storage/sd0/C/MIDI.mdb"
 /* #define MIDI_FILE_PATH  "mnt/sdfile/res/cfg/MIDI.mdb" */
 #else
-#define MIDI_FILE_PATH  CONFIG_MUSIC_PATH_FLASH"MIDI.mdb"
+//音色文件地址访问 sdk默认使用此方式
+#define MIDI_FILE_PATH  "mnt/sdfile/res/cfg/MIDI.mdb"
 #endif
 
 void midi_ctrl_set_ioctl(u32 cmd, void *priv);
@@ -305,19 +306,61 @@ void midi_ctrl_confing_set_melody_decay_each_chn(u16 *val)
 
 /*----------------------------------------------------------------------------*/
 /**@brief  弯音轮配置
-   @param   pitch_val:弯音轮值,1 - 65535 ；256是正常值,对音高有作用
+   @param   pitch_val:弯音轮值,32bit ；256是正常值,对音高有作用
    @param   chn :通道(0~15)
    @return
    @note
 */
 /*----------------------------------------------------------------------------*/
-void midi_ctrl_pitch_bend(u16 pitch_val, u8 chn)
+void midi_ctrl_pitch_bend(u32 pitch_val, u8 chn)
 {
     struct pitch_bend_parm parm = {0};
     parm.pitch_val = pitch_val;
     parm.chn = chn;
     midi_ctrl_ioctrl(MIDI_CTRL_PITCH_BEND, &parm);
 }
+
+/*----------------------------------------------------------------------------*/
+/**@brief  滑音配置
+   @param   pitch_val: 滑音值 32bit ；256是正常值,对音高有作用
+   @param   key :按键序号(0~127)
+   @param   chn :通道(0~15)
+   @return
+   @note
+*/
+/*----------------------------------------------------------------------------*/
+void midi_ctrl_glissando(u32 pitch_val, u8 key, u8 chn)
+{
+    struct glissando_parm parm = {0};
+    parm.pitch_val = pitch_val;
+    parm.key = key;
+    parm.chn = chn;
+    midi_ctrl_ioctrl(MIDI_CTRL_GLISSANDO, &parm);
+}
+
+/*----------------------------------------------------------------------------*/
+/**@brief  通道或轨道音量配置
+   @param   cc_vol[16]:16个通道或轨道的音量, 4096是原始音量即放大了12bit，小于4096是缩小音量，大于4096是放大
+   @param   ex_vol_use_chn :ex_vol_use_chn = 0 轨道音量；ex_vol_use_chn = 1 通道音量
+   @return
+   @note
+*/
+/*----------------------------------------------------------------------------*/
+void midi_ctrl_ex_ch_vol(u16 *cc_vol)
+{
+    EX_CH_VOL_PARM parm = {0};
+    if (cc_vol) {
+        memcpy(parm.cc_vol, cc_vol, sizeof(parm.cc_vol));
+    }
+    parm.ex_vol_use_chn = 1; //MIDI琴使用通道音量
+
+    struct switch_enable_parm switch_parm = {0};
+    switch_parm.midi_switch_enable = EX_VOL_ENABLE;
+
+    midi_ctrl_confing(CMD_MIDI_SET_SWITCH, (void *)&switch_parm);
+    midi_ctrl_confing(CMD_MIDI_SET_EX_VOL, (void *)&parm);
+}
+
 
 
 struct midi_dec_server_handle {
@@ -428,6 +471,8 @@ void midi_paly_test(u32 key)
     static u8 change_prog = 0;
     static u8 note_on_off = 0;
     static u8 midi_dec_open_err = 0;
+    u16 cc_vol[16];
+    int i;
 
     if (midi_dec_open_err) {
         printf("midi_dec_open_err");
@@ -456,6 +501,8 @@ void midi_paly_test(u32 key)
         //模拟按键57、58、59、60、61、62,以力度127，通道0，按下/松开测试
         midi_ctrl_note_on(57, 127, 0);
         os_time_dly(10);
+        midi_ctrl_glissando(512, 57, 0);
+        os_time_dly(10);
         midi_ctrl_note_off(57,  0, 0);
         os_time_dly(100);
 
@@ -463,6 +510,11 @@ void midi_paly_test(u32 key)
         os_time_dly(1);
         midi_ctrl_note_off(58,  0, 0);
         os_time_dly(100);
+
+        for (i = 0; i < 16; i++) {
+            cc_vol[i] = 100;
+        }
+        midi_ctrl_ex_ch_vol(cc_vol);
 
         midi_ctrl_note_on(59, 127, 0);
         os_time_dly(1);
@@ -473,6 +525,12 @@ void midi_paly_test(u32 key)
         os_time_dly(1);
         midi_ctrl_note_off(60,  0, 0);
         os_time_dly(100);
+
+        for (i = 0; i < 16; i++) {
+            cc_vol[i] = 8192;
+        }
+        midi_ctrl_ex_ch_vol(cc_vol);
+        os_time_dly(10);
 
         midi_ctrl_note_on(61, 127, 0);
         os_time_dly(1);

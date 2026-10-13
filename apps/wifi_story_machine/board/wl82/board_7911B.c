@@ -303,6 +303,7 @@ static const struct dac_platform_data dac_data = {
 #endif
 };
 static const struct adc_platform_data adc_data = {
+    .sr_points = 256,
     .mic_channel = TCFG_MIC_CHANNEL_MAP,
     .linein_channel = TCFG_LINEIN_CHANNEL_MAP,
     .mic_ch_num = TCFG_MIC_CHANNEL_NUM,
@@ -324,11 +325,11 @@ static void plnk0_port_remap_cb(void)
     extern int gpio_plnk_rx_input(u32 gpio, u8 index, u8 data_sel);
     gpio_plnk_rx_input(IO_PORTA_02, 0, 0);
     gpio_output_channle(IO_PORTA_01, CH0_PLNK0_SCLK_OUT);	//SCLK0使用outputchannel0
-    JL_IOMAP->CON3 |= BIT(18);
+    // JL_IOMAP->CON3 |= BIT(18); //配置plnk0默认sclk输出引脚pb3
 }
 static void plnk0_port_unremap_cb(void)
 {
-    JL_IOMAP->CON3 &= ~BIT(18);
+    // JL_IOMAP->CON3 &= ~BIT(18);
     gpio_clear_output_channle(IO_PORTA_01, CH0_PLNK0_SCLK_OUT);
     gpio_set_die(IO_PORTA_02, 0);
 }

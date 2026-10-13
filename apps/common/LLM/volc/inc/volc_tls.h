@@ -97,6 +97,22 @@ __byte_rtc_api__ uint32_t volc_tls_destroy(volc_tls_t tls);
 __byte_rtc_api__ int volc_tls_start(volc_tls_t tls, bool is_server, const char *host, volc_tls_send_callback send_callback, volc_tls_recv_callback recv_callback, void *custom_data);
 
 /**
+ * @brief 启动一个带证书校验的 TLS 会话。
+ *
+ * 该函数用于开始一个新的 TLS 会话，可以作为服务器或客户端，并对证书进行校验。
+ *
+ * @param tls 要启动的 TLS 上下文。
+ * @param is_server 是否作为服务器启动。
+ * @param host 服务器的主机名，如果作为客户端启动则需要指定。
+ * @param ca_cert_path PEM 格式的 CA 证书文件路径，用于校验服务器证书。
+ * @param send_callback 用于发送数据的回调函数。
+ * @param recv_callback 用于接收数据的回调函数。
+ * @param custom_data 用户自定义的数据指针，将传递给回调函数。
+ * @return 操作结果的状态码，0 表示成功，非 0 表示失败。
+ */
+__byte_rtc_api__ int volc_tls_start_with_verify(volc_tls_t tls, bool is_server, const char *host, const char *ca_cert_path, volc_tls_send_callback send_callback, volc_tls_recv_callback recv_callback, void *custom_data);
+
+/**
  * @brief 从 TLS 会话中读取数据。
  *
  * 该函数用于从 TLS 会话中读取数据到指定的缓冲区。

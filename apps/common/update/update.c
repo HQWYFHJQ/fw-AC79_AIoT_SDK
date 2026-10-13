@@ -44,6 +44,7 @@
 #define DEVICE_FIRST_START     BIT(31)
 
 extern const int support_vm_data_keep;
+extern const int support_reserved_data_keep;
 extern void vm_reverse_addr_size_get(u32 *addr, u32 *len);
 extern void update_module_init(void (*cbk)(update_mode_info_t *, u32, void *));
 extern void testbox_update_init(void);
@@ -323,12 +324,27 @@ void update_mode_api_v2(UPDATA_TYPE type, void (*priv_param_fill_hdl)(UPDATA_PAR
 
     if (p) {
         memset((u8 *)p, 0x00, sizeof(UPDATA_PARM));
-        if (support_vm_data_keep) {//单备份升级，parm_priv参数存vm_addr和vm_len到ota.bin的，传给net_ota.bin网络升级使用
-            u32 vm_addr = 0, vm_len = 0;
-            vm_reverse_addr_size_get(&vm_addr, &vm_len);
-            memcpy(p->parm_priv, &vm_addr, sizeof(vm_addr));
-            memcpy(p->parm_priv + sizeof(vm_addr), &vm_len, sizeof(vm_len));
+#ifdef CONFIG_NET_UPGRADE_INFO_USE_RESERVED
+
+        if (type == NET_UFW_UPDATA) {
+            struct reserved_info_transfer transfer;
+            memset(&transfer, 0, sizeof(struct reserved_info_transfer));
+            reserved_config_addr_get(&transfer.reserved_addr, &transfer.reserved_len);
+            if (transfer.reserved_addr != 0) {
+                memcpy(p->parm_priv, &transfer, sizeof(transfer));
+                printf("parm_priv: addr=0x%x, len=0x%x\n", transfer.reserved_addr, transfer.reserved_len);
+            }
+        } else
+#endif
+        {
+            if (support_vm_data_keep) {//单备份升级，parm_priv参数存vm_addr和vm_len到ota.bin的，传给net_ota.bin网络升级使用
+                u32 vm_addr = 0, vm_len = 0;
+                vm_reverse_addr_size_get(&vm_addr, &vm_len);
+                memcpy(p->parm_priv, &vm_addr, sizeof(vm_addr));
+                memcpy(p->parm_priv + sizeof(vm_addr), &vm_len, sizeof(vm_len));
+            }
         }
+
         update_param_content_fill(type, p, priv_param_fill_hdl);
 
         if (succ_report.update_param_write_hdl) {

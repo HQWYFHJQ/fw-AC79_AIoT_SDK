@@ -285,6 +285,7 @@ c_SRC_FILES := \
 	../../../../apps/common/update/http_update.c \
 	../../../../apps/common/update/net_single_backup_update.c \
 	../../../../apps/common/update/net_update.c \
+	../../../../apps/common/update/reserved_config.c \
 	../../../../apps/common/update/update.c \
 	../../../../apps/common/usb/device/cdc.c \
 	../../../../apps/common/usb/device/descriptor.c \

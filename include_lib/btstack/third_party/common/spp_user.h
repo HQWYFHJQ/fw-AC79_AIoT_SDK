@@ -9,7 +9,7 @@ extern void user_spp_data_handler(u8 packet_type, u16 ch, u8 *packet, u16 size);
 
 struct spp_operation_t {
     int(*disconnect)(void *priv);
-    int(*send_data)(void *priv, void *buf, u16 len);
+    int(*send_data)(void *priv, u8 *addr, u8 *buf, u32 len);
     int(*regist_wakeup_send)(void *priv, void *cbk);
     int(*regist_recieve_cbk)(void *priv, void *cbk);
     int(*regist_state_cbk)(void *priv, void *cbk);

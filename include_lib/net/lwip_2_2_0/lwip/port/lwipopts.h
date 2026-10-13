@@ -14,7 +14,7 @@ extern "C" {
 #define LWIP_NO_CTYPE_H 1
 
 //开启支持IPV6
-#define CONFIG_LWIP_IPV6_ENABLE
+/* #define CONFIG_LWIP_IPV6_ENABLE */
 
 #define LWIP_TIMEVAL_PRIVATE 0
 
@@ -225,6 +225,17 @@ extern "C" {
 
 #define IP_NAPT_EXT                     IP_NAPT
 
+#define IP_BRIDGE                       IP_NAPT
+
+/**
+ * LWIP_NUM_NETIF_CLIENT_DATA: Number of clients that may store
+ * data in client_data member array of struct netif (max. 256).
+ * Needed by bridgeif, DHCP, IGMP, etc.
+ */
+#if IP_BRIDGE
+#define LWIP_NUM_NETIF_CLIENT_DATA      4
+#endif
+
 /**
  * IP_REASSEMBLY==1: Reassemble incoming fragmented IP packets. Note that
  * this option does not affect outgoing packet sizes, which can be controlled
@@ -360,7 +371,7 @@ ip4_route2(src, dest)
  */
 #ifdef CONFIG_LWIP_IPV6_ENABLE
 #define LWIP_IPV6               1
-#define LWIP_IPV6_DHCP6         1
+#define LWIP_IPV6_DHCP6         0
 #define LWIP_IPV6_DUP_DETECT_ATTEMPTS   0
 #define LWIP_NETIF_EXT_STATUS_CALLBACK  1
 #define LWIP_ND6_RDNSS_MAX_DNS_SERVERS  3
@@ -687,6 +698,8 @@ extern unsigned char __attribute__((aligned(4)))  __attribute__((section(".memp_
 #define LOCAL_BT_HOST_NAME "lwip_bt_host"
 #define LOCAL_LTE_HOST_NAME "lwip_lte_host"
 #define LOCAL_EXT_WIRELESS_HOST_NAME "lwip_ext_wireless_host"
+#define LOCAL_UART_HOST_NAME "lwip_uart_host"
+#define LOCAL_BRIDGE_HOST_NAME "lwip_bridge_host"
 //#define DNS_LOCAL_HOSTLIST_INIT {{LOCAL_WIRELESS_HOST_NAME, 0x0101a8c0},{LOCAL_WIRE_HOST_NAME, 0x0201a8c0},}
 
 /**

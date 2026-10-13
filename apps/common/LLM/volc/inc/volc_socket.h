@@ -159,7 +159,7 @@ ssize_t volc_recv_msg(int sockfd, void *data, size_t size, volc_ip_addr_t *p_add
  * @param p_status 发送状态，可用于设置特定的发送条件或标志。
  * @return ssize_t 如果成功，返回实际发送的字节数；如果发生错误，返回 -1。
  */
-ssize_t volc_send_msg(int sockfd, void *data, size_t size, volc_ip_addr_t *addr, uint32_t *p_status);
+ssize_t volc_send_msg(int sockfd, void *data, size_t size, volc_ip_addr_t *addr, uint32_t *p_status, uint8_t tos);
 
 /**
  * @brief 关闭指定的套接字
@@ -195,9 +195,10 @@ int volc_sockopt_get_buffer_size(int __fd, bool _is_send_buffer) ;
 
 int volc_getaddrinfo(const char *host, uint16_t port, volc_ip_addr_t **addrs, int *count);
 
+int volc_freeaddrinfo(volc_ip_addr_t *addrs);
+
 int volc_poll(struct volc_pollfd *fds, int nfds, int timeout);
 
-int volc_freeaddrinfo(volc_ip_addr_t *addrs);
 #ifdef __cplusplus
 }
 #endif

@@ -5,7 +5,9 @@
 #define __SDRAM_SIZE__    (2 * 1024 * 1024)
 
 #define CONFIG_LTE_PHY_ENABLE
-//#define CONFIG_WIFI_ENABLE  					/* 无线WIFI */
+#define CONFIG_UART_NET_ENABLE
+//#define CONFIG_EXT_WIFI_ENABLE
+#define CONFIG_WIFI_ENABLE  					/* 无线WIFI */
 #ifdef CONFIG_NO_SDRAM_ENABLE
 #define CONFIG_RF_TRIM_CODE_MOVABLE //把RF TRIM 的运行代码动态加载到ram运行(节省4K ram内存), 防止RF TRIM 期间500ms大电流访问flash造成flash挂掉持续大电流
 #else

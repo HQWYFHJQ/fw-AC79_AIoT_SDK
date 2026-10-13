@@ -34,8 +34,8 @@ enum {
 #define HTTP_RECV_BUF		(20*1024)	//http升级缓存大小
 
 //HTTP升级的OTA升级文件网址
-/*#define HTTP_UPDATE_URL 	"http://test02.jieliapp.com/file/2022/update-ota.ufw"*/
-#define HTTP_UPDATE_URL 	"http://172.16.109.110:18888/update-ota.ufw"
+/* #define HTTP_UPDATE_URL     "http://test02.jieliapp.com/file/2022/update-ota.ufw" */
+#define HTTP_UPDATE_URL        "http://172.16.109.110:18888/update-ota.ufw"
 
 #define HTTP_GET_HEAD		"GET %s HTTP/1.1\r\n"\
 							"Host: %s\r\n"\
@@ -61,6 +61,7 @@ struct http_range_ota {
     unsigned char *file;
     unsigned char *send_buf;
     unsigned int buf_size;
+    unsigned char head_ok; // HTTP头已解析标志
     unsigned char buf[0];
 };
 static struct http_range_ota *http_ota = NULL;
@@ -84,6 +85,25 @@ static struct tcp_pcb *client_pcb = 0;
 static char client_accept = 0;
 static char net_ota_stop = 0;
 static char net_recv_err = 0;
+
+#define HTTP_OTA_DUMP_MAX   256
+static void http_ota_dump_rx(struct http_range_ota *httpota, const char *tag, int tot_len, err_t err)
+{
+    char tmp[HTTP_OTA_DUMP_MAX + 1];
+    int dump_len = MIN(tot_len, HTTP_OTA_DUMP_MAX);
+
+    if (dump_len > 0) {
+        memcpy(tmp, httpota->buf, dump_len);
+        tmp[dump_len] = 0;
+    } else {
+        tmp[0] = 0;
+    }
+
+    printf("[HTTP_OTA] %s err=%d tot=%d recv_off=%d range=%d-%d file_size=%d content_len=%d net_recv_err=%d stop=%d\n",
+           tag, err, tot_len, httpota->recv_offset, httpota->range_start, httpota->range_end,
+           httpota->file_size, httpota->content_length, net_recv_err, net_ota_stop);
+    printf("[HTTP_OTA] rx first %d/%d:\n%s\n", dump_len, tot_len, tmp);
+}
 
 #define OS_SEM_TIME_MAX	500 //5s
 static OS_SEM read_sem;
@@ -303,12 +323,16 @@ static err_t msgrecv(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err_t err)
             }
             tcp_recved(pcb, tot_len);
             /*printf("recv size : %d \n%s\n", tot_len, httpota->buf + httpota->recv_offset);*/
-            if (!httpota->recv_offset) {
+            if (!httpota->recv_offset && !httpota->head_ok) {
                 char *p, *f, *c;
                 p = (char *)httpota->buf + httpota->recv_offset;
                 f = strstr(p, "HTTP/1.1 206");
+                if (!f) {
+                    f = strstr(p, "HTTP/1.0 206"); //兼容http 1.0
+                }
                 /*sdfile_save_test(p, tot_len, 0, 1);*/
                 if (f) {
+                    //http_ota_dump_rx(httpota, "recv 206", tot_len, err);
                     net_recv_err = 0;
                     c = strstr(f, "Content-Length:");
                     if (!c) {
@@ -360,22 +384,27 @@ static err_t msgrecv(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err_t err)
                     }
 find:
                     if (Find) {
+                        httpota->head_ok = 1;
                         len = tot_len - (c - p);
-                        memcpy(httpota->buf, c, len);
-                        httpota->buf[len] = 0;
-                        httpota->recv_offset += len;
+                        if (len > 0) {
+                            memcpy(httpota->buf, c, len);
+                            //	httpota->buf[len] = 0;
+                            httpota->recv_offset += len;
+                        }
                     } else {
                         printf("recv head data err\n");
                         goto err;
                     }
                 } else {
 err:
+                    //http_ota_dump_rx(httpota, "recv err", tot_len, err);
                     printf("recv err \n");
                     net_recv_err++;
                     if (net_recv_err >= 3) {
                         net_recv_err = 0;
                         net_ota_stop = 1;
                         httpota->recv_offset = 0;
+                        httpota->head_ok = 0;
                     }
                     os_sem_post(&read_sem);
                 }
@@ -495,6 +524,7 @@ static int http_get(const char *url, char reset, int size)
             http_ota->file = NULL;
             http_ota->send_buf = NULL;
             http_ota->recv_offset = 0;
+            http_ota->head_ok = 0;
             http_ota->file_size = 0;
             goto exit;
         }
@@ -505,6 +535,7 @@ static int http_get(const char *url, char reset, int size)
     http_ota->send_buf = http_ota->host + len + 1;
     http_ota->file = NULL;
     http_ota->recv_offset = 0;
+    http_ota->head_ok = 0;
     if ((strlen(e) + len + 2) < http_ota->buf_size) {
         http_ota->file = http_ota->host + len + 1;
         len = strlen(e);
@@ -588,6 +619,7 @@ static int http_read(void *priv, char reset)
     if (!http_ota || !net_local) {
         return 0;
     }
+
     if (!http_ota->range_start && !http_ota->recv_offset) {
         http_ota->range_start = net_local->seek_addr;
     }
@@ -639,6 +671,64 @@ static int http_stop(int err)
     return 0;
 }
 #endif
+
+struct wifi_store_info *get_cur_wifi_info(void);
+static int ota_wifi_config_write_reservd(void)
+{
+    struct wifi_store_info	*info;
+    struct reserved_wifi_config config_info;
+    struct reserved_wifi_config config_info_verify;
+    info = get_cur_wifi_info();
+    if (info  == NULL) {
+        printf("get wifi info err \n");
+        return -1;
+    }
+    memset(&config_info, 0, sizeof(struct reserved_wifi_config));
+    memcpy(&config_info.wifi_info, info, sizeof(struct wifi_store_info));
+    strcpy(config_info.update_url, HTTP_UPDATE_URL);
+
+    int ret = reserved_wifi_config_write(&config_info); //写入预留区
+
+    printf("write success: ssid[0]=%s, mode=%d\n",
+           config_info.wifi_info.ssid[0], config_info.wifi_info.mode);
+
+    if (ret != 0) {
+        printf("reserved_wifi_config_write failed \n");
+        return -1;
+    }
+
+    //verify
+    memset(&config_info_verify, 0, sizeof(struct reserved_wifi_config));
+    ret = reserved_wifi_config_read(&config_info_verify);
+    if (ret != 0) {
+        printf("reserved_wifi_config_read failed: %d\n", ret);
+        return -1;
+    }
+
+    //比较写入和读出的数据
+    if (memcmp(&config_info.wifi_info, &config_info_verify.wifi_info, sizeof(struct wifi_store_info)) != 0) {
+        printf("wifi info verify failed!\n");
+        printf("write: ssid[0]=%s, read: ssid[0]=%s\n",
+               config_info.wifi_info.ssid[0], config_info.wifi_info.ssid[0]);
+        return -1;
+    }
+
+    if (strcmp(config_info.update_url, config_info_verify.update_url) != 0) {
+        printf("update_url verify failed!\n");
+        printf("write: %s, read: %s\n", config_info.update_url, config_info.update_url);
+        return -1;
+    }
+
+    //done
+    printf("ota_wifi_config_reservd verify success:\n");
+    printf("  mode=%d, sta_cnt=%d\n", config_info_verify.wifi_info.mode, config_info_verify.wifi_info.sta_cnt);
+    printf("  ssid[0]=%s, pwd[0]=%s\n", config_info_verify.wifi_info.ssid[0], config_info_verify.wifi_info.pwd[0]);
+    printf("  update_url=%s\n", config_info_verify.update_url);
+
+
+    return 0;
+}
+
 int net_ota_single_back_init(void)
 {
 #if HTTP_UPDATE_ENABLE
@@ -654,8 +744,15 @@ int net_ota_single_back_init(void)
         return -1;
     }
     os_sem_create(&read_sem, 0);
-    syscfg_write(VM_HTTP_SINGLE_UPDATE_URL, (char *)HTTP_UPDATE_URL, strlen(HTTP_UPDATE_URL) + 1);
+
+#ifdef CONFIG_NET_UPGRADE_INFO_USE_RESERVED
+    //将单备份OTA升级WiFi信息写入预留区
+    ota_wifi_config_write_reservd();
     printf("---> HTTP_UPDATE_URL = %s \n", HTTP_UPDATE_URL);
+#else
+    syscfg_write(VM_HTTP_SINGLE_UPDATE_URL, (char *)HTTP_UPDATE_URL, strlen(HTTP_UPDATE_URL) + 1);
+#endif
+
 #else
     int err = 0;
     int cnt = 0;

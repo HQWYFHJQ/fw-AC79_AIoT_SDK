@@ -330,7 +330,6 @@
 <Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/inet.h" />
 <Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/ip4_addr.h" />
 <Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/ip6_addr.h" />
-<Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/ip6_zone.h" />
 <Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/ip_addr.h" />
 <Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/mem.h" />
 <Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/memp.h" />
@@ -346,6 +345,8 @@
 <Unit filename="../../../../../include_lib/net/server/rt_stream_pkg.h" />
 <Unit filename="../../../../../include_lib/net/server/stream_core.h" />
 <Unit filename="../../../../../include_lib/net/version.z.S" />
+<Unit filename="../../../../../include_lib/net/wifi/wifi_connect.h" />
+<Unit filename="../../../../../include_lib/net/wifi/wifi_def.h" />
 <Unit filename="../../../../../include_lib/newlib/include/machine/time.h" />
 <Unit filename="../../../../../include_lib/newlib/include/machine/types.h" />
 <Unit filename="../../../../../include_lib/newlib/include/strings.h" />

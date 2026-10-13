@@ -1,5 +1,6 @@
 #include "system/includes.h"
 #include "syscfg_id.h"
+#include "app_config.h"
 
 #ifdef CONFIG_EXT_WIFI_ENABLE
 

@@ -68,6 +68,24 @@ enum WIFI_MODULE_EVENT {
     PM_RESUME = 0x7,
 };
 
+/*爱科微扫描结果ssid结构体*/
+#define MAX_AP_COUNT 32
+typedef struct wifi_ap_info {
+    unsigned char   ssid[32];
+    unsigned int    ssid_len;
+    unsigned char   bssid[6];
+    unsigned int    channel;
+    unsigned int    rssi;
+} wifi_ap_info_t;
+
+typedef struct _wifi_ap_list {
+    unsigned short  ap_count;
+    wifi_ap_info_t ap_info[MAX_AP_COUNT];
+} wifi_ap_list_t;
+
+
+
+
 struct netdev_ssid_info {
     char ssid[32];
     unsigned int ssid_len;

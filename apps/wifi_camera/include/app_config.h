@@ -250,6 +250,7 @@
 #endif
 
 #ifdef CONFIG_MASS_PRODUCTION_ENABLE /*量产模式打开STA模式*/
+
 #define CONFIG_WIFI_STA_MODE	/*打开:STA连接固定路由器,否则:默认AP模式*/
 #define CONFIG_USR_VIDEO_ENABLE		//用户VIDEO使能
 #endif
@@ -340,7 +341,7 @@
 #define CONFIG_NO_BACKUP_UPGRADE_PATH     	CONFIG_ROOT_PATH\
 											CONFIG_UPGRADE_FILE_NAME	//不备份的网络固件升级专用，建议采用备份方式升级
 
-
+#define CONFIG_NET_UPGRADE_INFO_USE_RESERVED    //单备份HTTP升级使用预留区保存WiFi信息
 //*********************************************************************************//
 //                                  低功耗配置                                     //
 //*********************************************************************************//

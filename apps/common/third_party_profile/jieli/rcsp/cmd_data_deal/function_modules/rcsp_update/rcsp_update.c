@@ -1,5 +1,6 @@
 #include "app_config.h"
 #include "rcsp_update.h"
+#include "rcsp_cfg.h"
 #if RCSP_UPDATE_EN
 //#include "msg.h"
 #include "uart.h"
@@ -137,23 +138,27 @@ u8 get_curr_device_type(void)
 
 void set_update_ex_flash_flag(u8 update_flag)
 {
+#if 0
     // 读取vm，如果相同不设置，如果不同设置vm
     u8 tmp_flag = 0;
     syscfg_read(VM_RESET_EX_FLASH_FLAG, &tmp_flag, sizeof(tmp_flag));
     if (tmp_flag != update_flag) {
         syscfg_write(VM_RESET_EX_FLASH_FLAG, &update_flag, sizeof(update_flag));
     }
+#endif
 }
 
 u8 get_update_ex_flash_flag(void)
 {
     // 从vm中获取标志位
     u8 update_flag = 0;
+#if 0
     u8 tmp_flag = -1;
     if (sizeof(tmp_flag) ==
         syscfg_read(VM_RESET_EX_FLASH_FLAG, &tmp_flag, sizeof(tmp_flag))) {
         update_flag = tmp_flag;
     }
+#endif
     return update_flag;
 }
 
@@ -253,8 +258,8 @@ static void rcsp_wait_reboot_dev(void *priv)
 
 static void rcsp_rcsp_reboot_dev(void)
 {
-    extern void adv_edr_name_change_now(void);
-    adv_edr_name_change_now();
+    /* extern void adv_edr_name_change_now(void); */
+    /* adv_edr_name_change_now(); */
 #if TCFG_USER_TWS_ENABLE
     if (get_bt_tws_connect_status()) {
         modify_bt_name_and_reset(500);
@@ -647,6 +652,7 @@ int JL_rcsp_update_msg_deal(void *hdl, u8 event, u8 *msg)
     case MSG_JL_INQUIRE_DEVEICE_IF_CAN_UPDATE:
         rcsp_printf("MSG_JL_INQUIRE_DEVEICE_IF_CAN_UPDATE\n");
 #if 0
+#if 0
         remote_file_version = READ_BIG_U16(update_file_id_info.update_file_id_info.ver);
         rcsp_printf("remote_file_ver:V%d.%d.%d.%d\n",
                     (remote_file_version & 0xf000) >> 12,
@@ -709,15 +715,33 @@ int JL_rcsp_update_msg_deal(void *hdl, u8 event, u8 *msg)
 #endif
                 JL_rcsp_event_to_user(DEVICE_EVENT_FROM_RCSP, MSG_JL_LOADER_DOWNLOAD_START, NULL, 0);
             } else {
+#if (RCSP_MODE == RCSP_MODE_SOUNDBOX)
                 tws_need_update = 1;                //置上该标志位APP重新连接的时候强制进入升级
+#endif
             }
 
 #endif
         }
+#else
+        can_update_flag = UPDATE_FLAG_OK;
+        //todo;judge voltage
+        JL_resp_inquire_device_if_can_update((u8)msg[0], (u8)msg[1], can_update_flag);
 
+        if (0 == support_dual_bank_update_en) {
+            if (1) {
+                JL_rcsp_event_to_user(DEVICE_EVENT_FROM_RCSP, MSG_JL_LOADER_DOWNLOAD_START, NULL, 0);
+            } else {
+#if (RCSP_MODE == RCSP_MODE_SOUNDBOX)
+                tws_need_update = 1;                //置上该标志位APP重新连接的时候强制进入升级
+#endif
+            }
+        }
+
+#endif
         break;
 
     case MSG_JL_DEV_DISCONNECT:
+#if 0
         if (rcsp_send_list_is_empty() && check_ble_all_packet_sent()) {
             rcsp_printf("MSG_JL_DEV_DISCONNECT\n");
             ble_app_disconnect();
@@ -729,10 +753,12 @@ int JL_rcsp_update_msg_deal(void *hdl, u8 event, u8 *msg)
         } else {
             wait_response_timeout = sys_timeout_add(NULL, wait_response_and_disconn_ble, 100);
         }
+#endif
         break;
 
     case MSG_JL_LOADER_DOWNLOAD_START:
         printf("---%s --- %d\n", __func__, __LINE__);
+#if 0
         rcsp_update_data_api_register(rcsp_update_data_read, rcsp_update_status_response);
         register_receive_fw_update_block_handle(rcsp_update_handle);
 #if (RCSP_MODE == RCSP_MODE_WATCH)
@@ -747,9 +773,11 @@ int JL_rcsp_update_msg_deal(void *hdl, u8 event, u8 *msg)
         } else if (RCSP_SPP == get_curr_device_type()) {
             rcsp_update_loader_download_init(SPP_APP_UPDATA, rcsp_loader_download_result_handle);
         }
+#endif
         break;
 
     case MSG_JL_UPDATE_START:
+#if 0
         if (check_edr_is_disconnct()) {
             rcsp_printf("b");
             JL_rcsp_event_to_user(DEVICE_EVENT_FROM_RCSP, MSG_JL_UPDATE_START, NULL, 0);
@@ -762,11 +790,12 @@ int JL_rcsp_update_msg_deal(void *hdl, u8 event, u8 *msg)
                            rcsp_update_private_param_fill,
                            rcsp_update_before_jump_handle);
         /* sys_timeout_add(NULL, wait_response_and_disconn_spp, 100); */
-
+#endif
         break;
 
     case MSG_JL_ENTER_UPDATE_MODE:
         rcsp_printf("MSG_JL_ENTER_UPDATE_MODE:%x %x\n", msg[0], msg[1]);
+#if 0
         bt_set_low_latency_mode(0);
 #if TCFG_USER_TWS_ENABLE
         if (support_dual_bank_update_en && !tws_api_get_role()) {
@@ -798,6 +827,15 @@ int JL_rcsp_update_msg_deal(void *hdl, u8 event, u8 *msg)
             register_receive_fw_update_block_handle(rcsp_update_handle);
             rcsp_update_loader_download_init(DUAL_BANK_UPDATA, rcsp_loader_download_result_handle);
         }
+#else
+        if (support_dual_bank_update_en) {
+            u8 status = 0;
+            JL_CMD_response_send(msg[0], JL_PRO_STATUS_SUCCESS, msg[1], &status, 1);
+            rcsp_update_data_api_register(rcsp_update_data_read, rcsp_update_status_response);
+            register_receive_fw_update_block_handle(rcsp_update_handle);
+            rcsp_update_loader_download_init(DUAL_BANK_UPDATA, rcsp_loader_download_result_handle);
+        }
+#endif
         break;
 
     default:

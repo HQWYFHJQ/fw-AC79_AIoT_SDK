@@ -365,6 +365,12 @@ PRCT_ADR=0;
 PRCT_LEN=CODE_LEN;
 PRCT_OPT=2;
 
+#if defined CONFIG_NET_UPGRADE_INFO_USE_RESERVED
+HttpUpdate_ADR=AUTO;
+HttpUpdate_LEN=0x1000;
+HttpUpdate_OPT=1;
+#endif
+
 //#烧录后不可升级的资源
 [RESERVED_EXPAND_CONFIG]
 USER_ADR=AUTO; [固定预留给客户，避免客户量产后，想通过升级新增重要信息的保存却没有预先预留空间]

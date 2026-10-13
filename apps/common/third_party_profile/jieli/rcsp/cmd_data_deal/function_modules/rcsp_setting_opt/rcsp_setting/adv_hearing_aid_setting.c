@@ -291,7 +291,7 @@ int app_third_party_hearing_aid_resp(u8 *data, u16 len)
 {
     if (custom_app_send_user_data(data, len)) {
         if (spp_opt && spp_opt->send_data) {
-            return spp_opt->send_data(NULL, data, (u32)len);
+            return spp_opt->send_data(NULL, NULL, data, (u32)len);
         }
     }
     return 0;

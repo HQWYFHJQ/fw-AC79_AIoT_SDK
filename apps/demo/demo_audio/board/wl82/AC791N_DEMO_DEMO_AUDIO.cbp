@@ -225,6 +225,10 @@
 <Unit filename="../../../../../apps/common/audio_music/effects_adj.c"><Option compilerVer="CC"/></Unit>
 <Unit filename="../../../../../apps/common/audio_music/eq_config_new.c"><Option compilerVer="CC"/></Unit>
 <Unit filename="../../../../../apps/common/audio_music/midi/audio_dec_midi_ctrl.c"><Option compilerVer="CC"/></Unit>
+<Unit filename="../../../../../apps/common/audio_music/midi/midi_dec.c"><Option compilerVer="CC"/></Unit>
+<Unit filename="../../../../../apps/common/audio_music/midi/midi_dec.h" />
+<Unit filename="../../../../../apps/common/audio_music/midi/midi_event.c"><Option compilerVer="CC"/></Unit>
+<Unit filename="../../../../../apps/common/audio_music/midi/midi_play.c"><Option compilerVer="CC"/></Unit>
 <Unit filename="../../../../../apps/common/audio_music/music_decrypt.c"><Option compilerVer="CC"/></Unit>
 <Unit filename="../../../../../apps/common/audio_music/usb_audio_api.c"><Option compilerVer="CC"/></Unit>
 <Unit filename="../../../../../apps/common/config/log_config/app_config.c"><Option compilerVer="CC"/></Unit>
@@ -450,6 +454,7 @@
 <Unit filename="../../../../../include_lib/driver/device/video/video_ppbuf.h" />
 <Unit filename="../../../../../include_lib/driver/device/video/videobuf.h" />
 <Unit filename="../../../../../include_lib/driver/version.z.S" />
+<Unit filename="../../../../../include_lib/media/MIDIDefs.h" />
 <Unit filename="../../../../../include_lib/media/MIDI_CTRL_API.h" />
 <Unit filename="../../../../../include_lib/media/MIDI_DEC_API.h" />
 <Unit filename="../../../../../include_lib/media/PlatformDefine.h" />
@@ -491,7 +496,6 @@
 <Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/inet.h" />
 <Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/ip4_addr.h" />
 <Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/ip6_addr.h" />
-<Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/ip6_zone.h" />
 <Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/ip_addr.h" />
 <Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/mem.h" />
 <Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/memp.h" />

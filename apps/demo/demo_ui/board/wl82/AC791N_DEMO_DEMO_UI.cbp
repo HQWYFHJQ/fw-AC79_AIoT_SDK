@@ -3405,6 +3405,8 @@
 <Unit filename="../../../../../include_lib/driver/version.z.S" />
 <Unit filename="../../../../../include_lib/media/version.z.S" />
 <Unit filename="../../../../../include_lib/net/version.z.S" />
+<Unit filename="../../../../../include_lib/net/wifi/wifi_connect.h" />
+<Unit filename="../../../../../include_lib/net/wifi/wifi_def.h" />
 <Unit filename="../../../../../include_lib/newlib/include/_ansi.h" />
 <Unit filename="../../../../../include_lib/newlib/include/assert.h" />
 <Unit filename="../../../../../include_lib/newlib/include/machine/_default_types.h" />

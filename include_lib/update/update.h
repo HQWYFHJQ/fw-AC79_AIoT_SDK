@@ -2,6 +2,7 @@
 #define _UPDATE_H_
 
 #include "typedef.h"
+#include "net/wifi/wifi_connect.h"
 
 extern u32 UPDATA_BEG;
 
@@ -81,6 +82,9 @@ typedef struct _UPDATA_UART {
 
 
 #define UPDATE_PARAM_MAGIC		0x5441
+#define RESERVED_CONFIG_MAGIC   0x5753
+
+
 #if (USE_SDFILE_NEW == 1)
 typedef struct _UPDATA_PARM {
     u16 parm_crc;
@@ -124,6 +128,32 @@ typedef struct _UPDATA_PARM {
 } UPDATA_PARM;
 #endif
 #define UPDATE_PRIV_PARAM_LEN	32
+
+
+//预留区保存单备份HTTP升级存储结构
+
+struct reserved_info_transfer {
+    u32 reserved_addr;    // parm_priv[0..3]  预留区 flash 地址
+    u32 reserved_len;     // parm_priv[4..7]  预留区长度
+};
+
+//预留区存储的WiFi/url配置
+struct reserved_wifi_config {
+    u16 magic;
+    u16 crc;
+
+    struct wifi_store_info wifi_info;
+    // URL 信息
+    char update_url[128];         // OTA 升级 URL
+    char backup_url[128];         // 备用 URL
+
+    u8 extension[48];            // 预留扩展
+};
+
+int reserved_wifi_config_write(struct reserved_wifi_config *config);
+int reserved_wifi_config_read(struct reserved_wifi_config *config);
+void reserved_config_addr_get(u32 *addr, u32 *len);
+
 
 void update_mode_api(UPDATA_TYPE type, ...);
 void update_mode_api_v2(UPDATA_TYPE type, void (*priv_param_fill_hdl)(UPDATA_PARM *p), void (*priv_update_jump_handle)(int type));

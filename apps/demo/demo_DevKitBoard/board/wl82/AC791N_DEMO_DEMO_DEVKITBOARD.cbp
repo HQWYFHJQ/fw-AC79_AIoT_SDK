@@ -2076,7 +2076,6 @@
 <Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/inet.h" />
 <Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/ip4_addr.h" />
 <Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/ip6_addr.h" />
-<Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/ip6_zone.h" />
 <Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/ip_addr.h" />
 <Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/mem.h" />
 <Unit filename="../../../../../include_lib/net/lwip_2_2_0/lwip/src/include/lwip/memp.h" />

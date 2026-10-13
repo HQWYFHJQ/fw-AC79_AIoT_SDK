@@ -276,10 +276,8 @@ typedef enum JL_CONFIG_ERR_TABLE {
 #define    CFG_PRODUCT_LICENSE_INDEX    248
 #define    CFG_PRODUCT_RTC_INDEX        249
 
-#ifdef CONFIG_EXT_WIFI_ENABLE
 #define    EXT_WIFI_INFO_IDX            250
 #define    EXT_WIFI_MAC_IDX             251
-#endif
 
 #define    CFG_PRODUCT_RES_INDEX        252
 #define    CFG_PRODUCT_USER_INDEX       253

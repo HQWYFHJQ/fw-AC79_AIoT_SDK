@@ -79,6 +79,9 @@ enum LWIP_EVENT {
     LWIP_BT_DHCP_BOUND_TIMEOUT,
     LWIP_BT_DHCP_BOUND_SUCC,
 
+    LWIP_UART_DHCP_BOUND_TIMEOUT,
+    LWIP_UART_DHCP_BOUND_SUCC,
+
     LWIP_IP_GOT_IPV6_SUCC,
 };
 
@@ -108,12 +111,15 @@ struct iphdr_e {
 #define  LTE_NETIF      (3)
 #define  EXT_WIFI_NETIF (4)
 #define  WIFI_RAW_NETIF (5)
-#define  MAX_NETIF_NUM  (6)
+#define  UART_NETIF     (6)
+#define  BRIDGE_NETIF   (7)
+#define  MAX_NETIF_NUM  (8)
 
 #ifndef __LW_IP_C
 /* Exported variables --------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 void Init_LwIP(u8_t lwip_netif);
+void Init_LwIP_BridgePort(u8_t lwip_netif);
 void lwip_netif_set_up(u8_t lwip_netif);
 void lwip_netif_set_down(u8_t lwip_netif);
 void lwip_set_default_netif(u8_t lwip_netif);

@@ -138,7 +138,8 @@ ssize_t volc_recv_msg(int __fd, void *data, size_t size, volc_ip_addr_t *p_addr,
     return r;
 };
 
-ssize_t volc_send_msg(int __fd, void *data, size_t size, volc_ip_addr_t *__addr, uint32_t *p_status)
+#if 1
+ssize_t volc_send_msg(int __fd, void *data, size_t size, volc_ip_addr_t *__addr, uint32_t *p_status, uint8_t tos)
 {
     struct msghdr msg = {0};
     msg.msg_flags = 0;
@@ -159,23 +160,19 @@ ssize_t volc_send_msg(int __fd, void *data, size_t size, volc_ip_addr_t *__addr,
 
     uint32_t ret_status = VOLC_STATUS_SUCCESS;
     if (r > 0) {
-//        printf("%s %d\n", __FUNCTION__, __LINE__);
         ret_status = VOLC_STATUS_SUCCESS;
     } else if (errno == EAGAIN || errno == EWOULDBLOCK) {
-//        printf("%s %d\n", __FUNCTION__, __LINE__);
         ret_status = VOLC_STATUS_EVLOOP_PERFORM_NEED_RETRY;
     } else if (r < 0) {
-//        printf("%s %d\n", __FUNCTION__, __LINE__);
         ret_status = VOLC_STATUS_EVLOOP_PERFORM_FAILED;
     };
 
     if (p_status  != NULL) {
         *p_status = ret_status;
     };
-//    printf("%s %d\n", __FUNCTION__, __LINE__);
     return r;
 }
-
+#endif
 
 int volc_close(int __fd)
 {
@@ -386,15 +383,17 @@ int volc_getaddrinfo(const char *host, uint16_t port, volc_ip_addr_t **addrs, in
         index++;
         cur = cur->ai_next;
     }
+    if (res != NULL) {
+        freeaddrinfo(res);
+    }
     return VOLC_SUCCESS;
 }
 
 int volc_freeaddrinfo(volc_ip_addr_t *addrs)
 {
     volc_debug("%s %d\n", __FUNCTION__, __LINE__);
-        if (addrs) {
-                volc_free(addrs);
-           
+    if (addrs) {
+        volc_free(addrs);
     }
-        return 0;
+    return 0;
 }

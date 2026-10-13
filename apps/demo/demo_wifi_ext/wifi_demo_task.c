@@ -321,6 +321,9 @@ static int wifi_event_callback(void *network_ctx, enum WIFI_EVENT event)
         wifi_set_pwr(0); //把WIFI模拟功率调整到最低档位节电
 #endif
 
+#if IP_BRIDGE
+        return 1;
+#endif
         break;
     case WIFI_EVENT_MODULE_STOP:
         puts("|network_user_callback->WIFI_EVENT_MODULE_STOP\n");
@@ -329,6 +332,9 @@ static int wifi_event_callback(void *network_ctx, enum WIFI_EVENT event)
     case WIFI_EVENT_AP_START:
         printf("|network_user_callback->WIFI_EVENT_AP_START,CH=%d\n", wifi_get_channel());
         //wifi_rxfilter_cfg(7);    //过滤广播+多播+not_my_bssid
+#if IP_BRIDGE
+        return 1;
+#endif
         break;
     case WIFI_EVENT_AP_STOP:
         puts("|network_user_callback->WIFI_EVENT_AP_STOP\n");
@@ -487,6 +493,10 @@ static int wifi_event_callback(void *network_ctx, enum WIFI_EVENT event)
         struct ip4_addr ipaddr;
         hwaddr = (struct eth_addr *)network_ctx;
         dhcps_get_ipaddr(hwaddr->addr, &ipaddr);
+#if IP_NAPT_EXT && defined CONFIG_LTE_PHY_ENABLE
+        extern void check_dhcps_client_ipaddr(u8 * hwaddr);
+        check_dhcps_client_ipaddr(hwaddr->addr);
+#endif
         printf("WIFI_EVENT_AP_ON_DISCONNECTED hwaddr = %02x:%02x:%02x:%02x:%02x:%02x, ipaddr = [%d.%d.%d.%d] \r\n\r\n",
                hwaddr->addr[0], hwaddr->addr[1], hwaddr->addr[2], hwaddr->addr[3], hwaddr->addr[4], hwaddr->addr[5],
                ip4_addr1(&ipaddr), ip4_addr2(&ipaddr), ip4_addr3(&ipaddr), ip4_addr4(&ipaddr));
@@ -561,7 +571,7 @@ static void wifi_rx_cb(void *rxwi, struct ieee80211_frame *wh, void *data, u32 l
 static void wifi_status(void *p)
 {
     if (wifi_is_on()) {
-        stats_display(); //LWIP stats
+        //stats_display(); //LWIP stats
         printf("WIFI U= %d KB/s, D= %d KB/s\r\n", wifi_get_upload_rate() / 1024, wifi_get_download_rate() / 1024);
 
         struct wifi_mode_info info;
@@ -584,18 +594,27 @@ static void wifi_status(void *p)
     }
 }
 
-char *check_enc_mode(int enc)
+char *get_wifi_auth_mode(WIFI_802_11_AUTH_MODE mode)
 {
-    if (ENC_MODE_BIT_IS_SET(enc, ENC_WPA3)) {
-        return "ENC_WPA3";
-    } else if (ENC_MODE_BIT_IS_SET(enc, ENC_WPA2)) {
-        return "ENC_WPA2";
-    } else if (ENC_MODE_BIT_IS_SET(enc, ENC_WPA)) {
-        return "ENC_WPA";
-    } else if (ENC_MODE_BIT_IS_SET(enc, ENC_WEP)) {
-        return "ENC_WEP";
-    } else {
-        return "ENC_NONE";
+    switch (mode) {
+    case WIFI_AUTH_MODE_OPEN:
+        return "AUTH_MODE_OPEN";
+    case WIFI_AUTH_MODE_WEP:
+        return "AUTH_MODE_WEP";
+    case WIFI_AUTH_MODE_WPA:
+        return "AUTH_MODE_WPA";
+    case WIFI_AUTH_MODE_WPA2PSK:
+        return "AUTH_MODE_WPA2PSK";
+    case WIFI_AUTH_MODE_WPAWPA2PSK:
+        return "AUTH_MODE_WPAWPA2PSK";
+    case WIFI_AUTH_MODE_WPA3SAE:
+        return "AUTH_MODE_WPA3SAE";
+    case WIFI_AUTH_MODE_WPA2PSKWPA3SAE:
+        return "AUTH_MODE_WPA2PSKWPA3SAE";
+    case WIFI_AUTH_MODE_WPA3H2E:
+        return "AUTH_MODE_WPA3H2E";
+    default:
+        return "***Unknown Auth Mode***";
     }
 }
 
@@ -616,7 +635,7 @@ static void wifi_scan_test(void)
         sta_ssid_info = wifi_get_scan_result(&sta_ssid_num);
         printf("wifi_sta_scan_channel_test channel %d, ssid_num =%d \r\n", ch, sta_ssid_num);
         for (int i = 0; i < sta_ssid_num; i++) {
-            printf("wifi_sta_scan_channel_test ssid = [%s],rssi = %d,snr = %d, enc = %s\r\n", sta_ssid_info[i].ssid, sta_ssid_info[i].rssi, sta_ssid_info[i].snr, check_enc_mode(sta_ssid_info[i].enc));
+            printf("wifi_sta_scan_channel_test ssid = [%s],rssi = %d,snr = %d, enc = %s\r\n", sta_ssid_info[i].ssid, sta_ssid_info[i].rssi, sta_ssid_info[i].snr, get_wifi_auth_mode(sta_ssid_info[i].auth_mode));
         }
         free(sta_ssid_info);
     }
@@ -628,7 +647,7 @@ static void wifi_scan_test(void)
     sta_ssid_info = wifi_get_scan_result(&sta_ssid_num);
     printf("wifi_sta_scan_test ssid_num =%d \r\n", sta_ssid_num);
     for (int i = 0; i < sta_ssid_num; i++) {
-        printf("wifi_sta_scan_test ssid = [%s],rssi = %d,snr = %d, enc = %s\r\n", sta_ssid_info[i].ssid, sta_ssid_info[i].rssi, sta_ssid_info[i].snr, check_enc_mode(sta_ssid_info[i].enc));
+        printf("wifi_sta_scan_test ssid = [%s],rssi = %d,snr = %d, enc = %s\r\n", sta_ssid_info[i].ssid, sta_ssid_info[i].rssi, sta_ssid_info[i].snr, get_wifi_auth_mode(sta_ssid_info[i].auth_mode));
     }
 
     free(sta_ssid_info);
@@ -646,10 +665,13 @@ static void wifi_demo_task(void *priv)
     wifi_set_store_ssid_cnt(NETWORK_SSID_INFO_CNT);
     wifi_set_event_callback(wifi_event_callback);
 
+#if !IP_NAPT_EXT || !defined CONFIG_LTE_PHY_ENABLE
     wifi_on();
 
     //wifi_on之后即可初始化服务器类型的网络应用程序
+    extern void iperf_test(void);
     iperf_test();
+#endif
 
     sys_timer_add_to_task("app_core", NULL, wifi_status, 60 * 1000); //打印一下WIFI一些信息
 

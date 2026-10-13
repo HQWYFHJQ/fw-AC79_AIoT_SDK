@@ -81,6 +81,45 @@ err_out_label:
     return ret;
 }
 
+__attribute__((weak))
+int mbedtls_x509_crt_parse_file(void *a, char *b)
+{
+    printf("%s is NULL function\n", __func__);
+    return 1;
+}
+
+int volc_tls_start_with_verify(volc_tls_t tls, bool is_server, const char *host, const char *ca_cert_path, volc_tls_send_callback send_callback, volc_tls_recv_callback recv_callback, void *custom_data)
+{
+    int ret = 0;
+    volc_tls_mbedtls_ctx_t *ctx = (volc_tls_mbedtls_ctx_t *)tls;
+    if (NULL == tls || NULL == host || NULL == ca_cert_path || NULL == send_callback || NULL == recv_callback) {
+        return -1;
+    }
+
+    mbedtls_ssl_config_defaults(&(ctx->ssl_ctx_config), is_server ? MBEDTLS_SSL_IS_SERVER : MBEDTLS_SSL_IS_CLIENT, MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT);
+
+    mbedtls_x509_crt_free(&(ctx->cacert));
+    mbedtls_x509_crt_init(&(ctx->cacert));
+
+    ret = mbedtls_x509_crt_parse_file(&(ctx->cacert), ca_cert_path);
+    if (ret != 0) {
+        // printf("mbedtls_x509_crt_parse_file failed, ret %d\n", ret);
+        goto err_out_label;
+    }
+
+    mbedtls_ssl_conf_ca_chain(&ctx->ssl_ctx_config, &(ctx->cacert), NULL);
+    mbedtls_ssl_conf_authmode(&ctx->ssl_ctx_config, MBEDTLS_SSL_VERIFY_REQUIRED);
+    mbedtls_ssl_conf_rng(&ctx->ssl_ctx_config, mbedtls_ctr_drbg_random, &ctx->ctr_drbg);
+    mbedtls_ssl_setup(&ctx->ssl_ctx, &ctx->ssl_ctx_config);
+
+    mbedtls_ssl_set_hostname(&ctx->ssl_ctx, host);
+    mbedtls_ssl_set_bio(&ctx->ssl_ctx, custom_data, send_callback, recv_callback, NULL);
+    ret = mbedtls_ssl_handshake(&ctx->ssl_ctx);
+
+err_out_label:
+    return ret;
+}
+
 int volc_tls_read(volc_tls_t tls, unsigned char *buf, size_t len)
 {
     volc_tls_mbedtls_ctx_t *ctx = (volc_tls_mbedtls_ctx_t *)tls;

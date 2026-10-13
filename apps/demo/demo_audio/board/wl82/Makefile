@@ -187,6 +187,9 @@ c_SRC_FILES := \
 	../../../../../apps/common/audio_music/effects_adj.c \
 	../../../../../apps/common/audio_music/eq_config_new.c \
 	../../../../../apps/common/audio_music/midi/audio_dec_midi_ctrl.c \
+	../../../../../apps/common/audio_music/midi/midi_dec.c \
+	../../../../../apps/common/audio_music/midi/midi_event.c \
+	../../../../../apps/common/audio_music/midi/midi_play.c \
 	../../../../../apps/common/audio_music/music_decrypt.c \
 	../../../../../apps/common/audio_music/usb_audio_api.c \
 	../../../../../apps/common/config/log_config/app_config.c \

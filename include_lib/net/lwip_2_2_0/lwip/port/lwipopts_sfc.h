@@ -219,6 +219,12 @@ extern "C" {
 #define IP_FORWARD                      IP_NAPT
 #define IP_NAPT_EXT                     IP_NAPT
 
+#define IP_BRIDGE                       IP_NAPT
+
+#if IP_BRIDGE
+#define LWIP_NUM_NETIF_CLIENT_DATA      4
+#endif
+
 /**
  * IP_REASSEMBLY==1: Reassemble incoming fragmented IP packets. Note that
  * this option does not affect outgoing packet sizes, which can be controlled
@@ -658,6 +664,8 @@ extern unsigned char __attribute__((aligned(4)))  __attribute__((section(".memp_
 #define LOCAL_BT_HOST_NAME "lwip_bt_host"
 #define LOCAL_LTE_HOST_NAME "lwip_lte_host"
 #define LOCAL_EXT_WIRELESS_HOST_NAME "lwip_ext_wireless_host"
+#define LOCAL_UART_HOST_NAME "lwip_uart_host"
+#define LOCAL_BRIDGE_HOST_NAME "lwip_bridge_host"
 //#define DNS_LOCAL_HOSTLIST_INIT {{LOCAL_WIRELESS_HOST_NAME, 0x0101a8c0},{LOCAL_WIRE_HOST_NAME, 0x0201a8c0},}
 
 /**

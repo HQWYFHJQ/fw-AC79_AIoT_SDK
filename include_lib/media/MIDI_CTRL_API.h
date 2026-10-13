@@ -34,11 +34,11 @@ typedef struct _MIDI_CTRL_CONTEXT_ {
     u32(*set_prog)(void *work_buf, u8 prog, u8 chn);                    ///设置乐器
     u32(*note_on)(void *work_buf, u8 nkey, u8 nvel, u8 chn);               ///指定播放单个音符,nkey跟nvel的有效值是0-127
     u32(*note_off)(void *work_buf, u8 nkey, u8 chn, u16 time);             ///指定关闭单个音符,nkey跟nvel的有效值是0-127,time为衰减时间ms，若为0则使用音色中的衰减
-    u32(*pitch_bend)(void *work_buf, u16 pitch_val, u8 chn);
+    u32(*pitch_bend)(void *work_buf, u32 pitch_val, u8 chn);
     u32(*ctl_confing)(void *work_buf, u32 cmd, void *parm);
     u32(*vel_vibrate)(void *work_buf, u8 nkey, u8 vel_step, u8 vel_rate, u8 chn);  //vel_step:支持0到7：抖动步长,  vel_rate支持0到15：抖动幅度
     u8 *(*query_play_key)(void *work_buf, u8 chn); //查询指定通道的key播放，有MAX_CTR_PLAYER_CNT个值，若为255则为无效值
-    u32(*glissando)(void *work_buf, u16 pitch_val, u8 key, u8 chn);
+    u32(*glissando)(void *work_buf, u32 pitch_val, u8 key, u8 chn);
 } MIDI_CTRL_CONTEXT;
 
 
@@ -69,9 +69,20 @@ struct note_off_parm {
 };
 
 struct pitch_bend_parm {
-    u16 pitch_val;          //弯音轮值,1 - 65535 ；256是正常值,对音高有作用
+    u32 pitch_val;          //弯音轮值,32bit ；256是正常值,对音高有作用
     u8 chn;                 //通道(0~15)
 };
+
+struct glissando_parm {
+    u32 pitch_val;          //滑音值,32bit ；256是正常值,对音高有作用
+    u8 key;                 //按键序号（0~127）
+    u8 chn;                 //通道(0~15)
+};
+
+struct switch_enable_parm {
+    u16 midi_switch_enable;
+};
+
 
 //vel_step:支持0到7：抖动步长,  vel_rate支持0到15：抖动幅度
 struct vel_vibrate_parm {
@@ -94,6 +105,7 @@ enum {//不可改成员顺序
     MIDI_CTRL_PITCH_BEND,
     MIDI_CTRL_VEL_VIBRATE,
     MIDI_CTRL_QUERY_PLAY_KEY,
+    MIDI_CTRL_GLISSANDO,
 };
 
 #define MIDI_CTRL_CMD_OFFSET (NODE_IOC_MIDI_CTRL_NOTE_ON - MIDI_CTRL_NOTE_ON)

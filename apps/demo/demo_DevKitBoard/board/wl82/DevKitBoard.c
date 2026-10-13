@@ -413,11 +413,11 @@ static void plnk0_port_remap_cb(void)
     extern int gpio_plnk_rx_input(u32 gpio, u8 index, u8 data_sel);
     gpio_plnk_rx_input(IO_PORTH_02, 0, 0);
     gpio_output_channle(IO_PORTH_03, CH0_PLNK0_SCLK_OUT);	//SCLK0使用outputchannel0
-    JL_IOMAP->CON3 |= BIT(18);
+    // JL_IOMAP->CON3 |= BIT(18); //配置plnk0默认sclk输出引脚pb3
 }
 static void plnk0_port_unremap_cb(void)
 {
-    JL_IOMAP->CON3 &= ~BIT(18);
+    // JL_IOMAP->CON3 &= ~BIT(18);
     gpio_clear_output_channle(IO_PORTH_03, CH0_PLNK0_SCLK_OUT);
     gpio_set_die(IO_PORTH_02, 0);
 }

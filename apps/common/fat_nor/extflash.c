@@ -45,7 +45,7 @@ static int extflash_info_init(void)
 
 static int extflash_dev_init(const struct dev_node *node, void *arg)
 {
-    return norflash_init(node, arg);
+    return 0;
 }
 
 static int extflash_dev_open(const char *name, struct device **device, void *arg)

@@ -24,6 +24,7 @@
 #include "file_bluk_trans_prepare.h"
 #include "custom_cfg.h"
 #include "event/event.h"///RCSP TODO
+#include "event/bt_event.h"
 
 #if RCSP_MODE
 
@@ -80,6 +81,17 @@ void JL_rcsp_event_to_user(u32 type, u8 event, u8 *msg, u8 size)
     e.u.rcsp.size = size;
 
     sys_event_notify(&e);
+#else
+    struct bt_event e = {0};
+    e.event = event;
+
+    if (size) {
+        memcpy(e.args, msg, size);
+    }
+
+    e.value = size;
+
+    bt_event_notify(BT_EVENT_FROM_BLE_RCSP_UPDATE, &e);
 #endif
 }
 

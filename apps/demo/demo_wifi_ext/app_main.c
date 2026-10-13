@@ -31,6 +31,7 @@ const struct task_info task_info_table[] = {
     {"systimer",            14,     256, 	   0 },
     {"sys_timer",            9,     512,	  128 },
 
+    {"lte_rx_task",          8,     512,  	 0},
     {"tcpip_thread",        16,     800,  	 0},
 #ifdef CONFIG_WIFI_ENABLE
     {"tasklet",             10,     1400,    0},//通过调节任务优先级平衡WIFI收发占据总CPU的比重

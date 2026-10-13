@@ -82,7 +82,7 @@ RCSP_MODE == RCSP_MODE_SOUNDBOX
 #define CONFIG_BT_GATT_CONNECTION_NUM       	RCSP_MULTI_BLE_SLAVE_NUMS + RCSP_MULTI_BLE_MASTER_NUMS
 
 // #define CONFIG_APP_OTA_ENABLE               	1     //是否支持RCSP升级(JL-OTA)
-#define RCSP_UPDATE_EN		         			0     //是否支持rcsp升级
+#define RCSP_UPDATE_EN		         			1     //是否支持rcsp升级
 #define OTA_TWS_SAME_TIME_ENABLE     			0     //是否支持TWS同步升级
 #define UPDATE_MD5_ENABLE            			0     //升级是否支持MD5校验
 #define RCSP_FILE_OPT				 			1

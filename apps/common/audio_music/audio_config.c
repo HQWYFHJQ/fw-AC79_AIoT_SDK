@@ -76,7 +76,7 @@ const int mp3encode_input_mode = 1; //0x01--short输入
 
 #ifdef CONFIG_MIDI_CTRL_DEC_ENABLE
 #ifdef CONFIG_MIDI_DEC_ADDR
-const int MIDI_TONE_MODE = 0;   //音色访问方式  0为地址访问(仅支持在内置flash)，1为文件访问(内置、外挂flash,sd,u盘均可)
+const int MIDI_TONE_MODE = 0;   //音色访问方式  0为地址访问(支持在flash)，1为文件访问(内置、外挂flash,sd,u盘均可),sdk默认使用地址访问速度最快
 #else
 const int MIDI_TONE_MODE = 1;
 #endif

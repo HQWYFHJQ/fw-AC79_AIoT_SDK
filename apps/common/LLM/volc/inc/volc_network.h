@@ -62,17 +62,6 @@ extern "C" {
 #define VOLC_IPV6_ADDRESS_LENGTH 16
 
 /**
- * @brief 定义网络回调函数类型。
- *
- * 该 typedef 定义了一个回调函数类型，用于在网络操作完成时调用。
- *
- * @param custom_data 用户自定义的数据，类型为 64 位无符号整数。
- * @param message 回调消息，类型为字符指针。
- * @return 布尔值，表示回调操作的结果。
- */
-typedef bool (*volc_network_callback_t)(uint64_t, char *);
-
-/**
  * @brief 定义套接字协议类型的枚举。
  *
  * 该枚举类型定义了不同的套接字协议类型，包括无协议、TCP 协议和 UDP 协议。
@@ -132,6 +121,16 @@ typedef struct {
     bool is_point_to_point;
 } volc_ip_addr_t;
 
+/**
+ * @brief 定义网络回调函数类型。
+ *
+ * 该 typedef 定义了一个回调函数类型，用于在网络操作完成时调用。
+ *
+ * @param custom_data 用户自定义的数据，类型为 64 位无符号整数。
+ * @param message 回调消息，类型为字符指针。
+ * @return 布尔值，表示回调操作的结果。
+ */
+typedef bool (*volc_network_callback_t)(uint64_t, char *, volc_ip_addr_t *);
 /**
  * @brief 获取本地 IP 地址。
  *
