@@ -653,6 +653,11 @@ static int wifi_event_callback(void *network_ctx, enum WIFI_EVENT event)
         thread_fork("Volc_demo", 4, 3 * 1024, 0, 0, VolcEngineRTCDemo, NULL);
 #endif
 
+#ifdef CONFIG_VOLC_AGENT_ENABLE
+        int volc_agent_init(void);
+        volc_agent_init();
+#endif
+
 #ifdef CONFIG_ONESDK_LLM_ENABLE
         int realtime_demo();
         thread_fork("realtime_demo", 4, 5 * 1024, 0, 0, realtime_demo, NULL);

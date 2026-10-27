@@ -677,6 +677,16 @@
 <Unit filename="../../../../apps/common/LLM/volc/src/platform/volc_time.c"><Option compilerVer="CC"/></Unit>
 <Unit filename="../../../../apps/common/LLM/volc/src/platform/volc_uuid.c"><Option compilerVer="CC"/></Unit>
 <Unit filename="../../../../apps/common/LLM/volc/src/platform/volc_zlib.c"><Option compilerVer="CC"/></Unit>
+<Unit filename="../../../../apps/common/LLM/volc_agent/asr_agent/asr.c"><Option compilerVer="CC"/></Unit>
+<Unit filename="../../../../apps/common/LLM/volc_agent/asr_agent/asr.h" />
+<Unit filename="../../../../apps/common/LLM/volc_agent/asr_agent/main.c"><Option compilerVer="CC"/></Unit>
+<Unit filename="../../../../apps/common/LLM/volc_agent/chat_agent/chat_completion.c"><Option compilerVer="CC"/></Unit>
+<Unit filename="../../../../apps/common/LLM/volc_agent/chat_agent/chat_completion.h" />
+<Unit filename="../../../../apps/common/LLM/volc_agent/chat_agent/main.c"><Option compilerVer="CC"/></Unit>
+<Unit filename="../../../../apps/common/LLM/volc_agent/main.c"><Option compilerVer="CC"/></Unit>
+<Unit filename="../../../../apps/common/LLM/volc_agent/tts_agent/main.c"><Option compilerVer="CC"/></Unit>
+<Unit filename="../../../../apps/common/LLM/volc_agent/tts_agent/volc_tts.c"><Option compilerVer="CC"/></Unit>
+<Unit filename="../../../../apps/common/LLM/volc_agent/tts_agent/volc_tts.h" />
 <Unit filename="../../../../apps/common/asr/aisp/aisp.c"><Option compilerVer="CC"/></Unit>
 <Unit filename="../../../../apps/common/asr/jlkws/jlkws.c"><Option compilerVer="CC"/></Unit>
 <Unit filename="../../../../apps/common/asr/jlkws/jlsp_far_keyword.h" />

@@ -414,6 +414,13 @@ c_SRC_FILES := \
 	../../../../apps/common/LLM/volc/src/platform/volc_time.c \
 	../../../../apps/common/LLM/volc/src/platform/volc_uuid.c \
 	../../../../apps/common/LLM/volc/src/platform/volc_zlib.c \
+	../../../../apps/common/LLM/volc_agent/asr_agent/asr.c \
+	../../../../apps/common/LLM/volc_agent/asr_agent/main.c \
+	../../../../apps/common/LLM/volc_agent/chat_agent/chat_completion.c \
+	../../../../apps/common/LLM/volc_agent/chat_agent/main.c \
+	../../../../apps/common/LLM/volc_agent/main.c \
+	../../../../apps/common/LLM/volc_agent/tts_agent/main.c \
+	../../../../apps/common/LLM/volc_agent/tts_agent/volc_tts.c \
 	../../../../apps/common/asr/aisp/aisp.c \
 	../../../../apps/common/asr/jlkws/jlkws.c \
 	../../../../apps/common/asr/roobo/roobo.c \

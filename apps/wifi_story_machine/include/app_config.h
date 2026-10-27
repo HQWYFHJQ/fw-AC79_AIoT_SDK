@@ -226,6 +226,7 @@
 // #define CONFIG_HTTP_SERVER_ENABLE            //HTTP服务器
 // #define CONFIG_FTP_SERVER_ENABLE             //FTP服务器
 // #define CONFIG_VOLC_LLM_ENABLE               //火山大模型
+// #define CONFIG_VOLC_AGENT_ENABLE             //火山引擎ASR_CHAT_TTS独立模型
 // #define CONFIG_ONESDK_LLM_ENABLE
 // #define CONFIG_SXY_QYAI_ENABLE
 // #define CONFIG_DUER_LC_DEMO_ENABLE           //小度澜川AI对话DEMO
